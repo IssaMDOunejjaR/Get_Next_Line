@@ -18,6 +18,7 @@
 # include <stdio.h>
 # include <unistd.h>
 
+int     get_next_line(int fd, char **line);
 size_t  ft_strlen(const char *s);
 void    ft_putchar_fd(int fd, char c);
 void    ft_putstr_fd(int fd, char *str);

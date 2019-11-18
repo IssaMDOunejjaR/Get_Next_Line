@@ -12,8 +12,6 @@
 
 #include "get_next_line.h"
 
-#define BUFFER_SIZE 10
-
 char    *locate(char *str)
 {
     int i;
@@ -42,9 +40,13 @@ int     get_next_line(int fd, char **line)
     char *result;
     char *tmp;
 
+
     buffer = malloc(BUFFER_SIZE + 1);
-    while ((i = read(fd, buffer, BUFFER_SIZE)))
+    if (fd < 0)
+        return -1;
+    while ((i = read(fd, buffer, BUFFER_SIZE)) > 0)
     {
+       
         if (i == 0 && !save[fd])
             return (0);
         if (!save[fd])
@@ -62,6 +64,8 @@ int     get_next_line(int fd, char **line)
         else
             save[fd] = result;
     }
+    if (i < 0)
+        return (-1);
     if (save[fd])
     {
         tmp = save[fd];
@@ -72,25 +76,15 @@ int     get_next_line(int fd, char **line)
     }
     return (0);
 }
-
+ 
 int main()
 {
-    int fd = open("test.txt", O_RDONLY);
-    int fd2 = open("big.txt", O_RDONLY);
     char *str;
-    int i = 1;
-    while (get_next_line (fd, &str) > 0)
+    int fd = open("test.txt", O_RDONLY);
+    while(get_next_line(fd, &str))
     {
-        printf("line %d = %s\n", i,str);
-        i++;
+        printf("\n%s",str);
+        free(str);
     }
-    /*get_next_line(fd, &str);
-    printf("line = %s\n", str);
-    get_next_line(fd2, &str);
-    printf("line = %s\n", str);
-    get_next_line(fd, &str);
-    printf("line = %s\n", str);
-    get_next_line(fd2, &str);
-    printf("line = %s\n", str);*/
-    return (0);
+    return 0;
 }
