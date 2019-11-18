@@ -12,6 +12,8 @@
 
 #include "get_next_line.h"
 
+#define BUFFER_SIZE 10
+
 char    *locate(char *str)
 {
     int i;
@@ -20,13 +22,13 @@ char    *locate(char *str)
 
     i = 0;
     j = 0;
-    while (str[i] != '\n' && str[i])
-        i++;
-    tmp = malloc((sizeof(char) * i) + 1);
-    while (j < i)
-    {
-        tmp[j] = str[j];
+    while (str[j] != '\n' && str[j])
         j++;
+    tmp = malloc((sizeof(char) * j) + 1);
+    while (i < j) 
+    {
+        tmp[i] = str[i];
+        i++;
     }
     tmp[i] = '\0';
     return (tmp);
@@ -38,40 +40,28 @@ int     get_next_line(int fd, char **line)
     int i;
     char *buffer;
     char *result;
-    char *tmp;
-
+    char *s;
 
     buffer = malloc(BUFFER_SIZE + 1);
-    if (fd < 0)
-        return -1;
     while ((i = read(fd, buffer, BUFFER_SIZE)) > 0)
     {
-       
-        if (i == 0 && !save[fd])
-            return (0);
         if (!save[fd])
-            save[fd] = malloc(sizeof(char) * 1);
+            save[fd] = ft_strdup("");
         buffer[i] = '\0';
         result = ft_strjoin(save[fd], buffer);
-        if (ft_strchr(result, '\n'))
+        if ((s = ft_strchr(result, '\n')))
         {
-            tmp = result;
-            result = locate(result);
-            save[fd] = ft_strchr(tmp, '\n');
-            *line = result;
+            save[fd] = s;
+            *line = locate(result);
             return (1);
         }
         else
             save[fd] = result;
     }
-    if (i < 0)
-        return (-1);
     if (save[fd])
     {
-        tmp = save[fd];
-        result = locate(save[fd]);
-        save[fd] = ft_strchr(tmp, '\n');
-        *line = result;
+        *line = locate(save[fd]);
+        save[fd] = ft_strchr(save[fd], '\n');
         return (1);
     }
     return (0);
@@ -81,10 +71,13 @@ int main()
 {
     char *str;
     int fd = open("test.txt", O_RDONLY);
-    while(get_next_line(fd, &str))
+    int fd2 = open("big.txt", O_RDONLY);
+    int i = 1;
+
+    while(get_next_line(fd2, &str))
     {
-        printf("\n%s",str);
-        free(str);
+        printf("line %d = %s\n", i, str);
+        i++;
     }
     return 0;
 }
