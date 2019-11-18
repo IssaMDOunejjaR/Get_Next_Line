@@ -42,24 +42,25 @@ int     get_next_line(int fd, char **line)
     char *result;
     char *tmp;
 
-    if (!save[fd])
-        save[fd] = malloc(sizeof(char) * 1);
     buffer = malloc(BUFFER_SIZE + 1);
     while ((i = read(fd, buffer, BUFFER_SIZE)))
     {
+        if (i == 0 && !save[fd])
+            return (0);
+        if (!save[fd])
+            save[fd] = malloc(sizeof(char) * 1);
         buffer[i] = '\0';
         result = ft_strjoin(save[fd], buffer);
-        printf("result = %s\n", result);
-        printf("###################################################\n");
-        if (ft_strchr(buffer, '\n'))
+        if (ft_strchr(result, '\n'))
         {
             tmp = result;
-            result = locate(buffer);
-            save[fd] = ft_strchr(buffer, '\n');
-            printf("save = %s\n", save[fd]);
+            result = locate(result);
+            save[fd] = ft_strchr(tmp, '\n');
             *line = result;
             return (1);
         }
+        else
+            save[fd] = result;
     }
     if (save[fd])
     {
@@ -69,18 +70,27 @@ int     get_next_line(int fd, char **line)
         *line = result;
         return (1);
     }
-    return (1);
+    return (0);
 }
 
 int main()
 {
     int fd = open("test.txt", O_RDONLY);
+    int fd2 = open("big.txt", O_RDONLY);
     char *str;
-    /*while (get_next_line (fd, &str) > 0)
-        printf("line = %s\n", str);*/
-    get_next_line(fd, &str);
+    int i = 1;
+    while (get_next_line (fd, &str) > 0)
+    {
+        printf("line %d = %s\n", i,str);
+        i++;
+    }
+    /*get_next_line(fd, &str);
+    printf("line = %s\n", str);
+    get_next_line(fd2, &str);
     printf("line = %s\n", str);
     get_next_line(fd, &str);
     printf("line = %s\n", str);
+    get_next_line(fd2, &str);
+    printf("line = %s\n", str);*/
     return (0);
 }
