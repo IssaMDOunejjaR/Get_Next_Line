@@ -12,7 +12,25 @@
 
 #include "get_next_line.h"
 
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 100
+
+int	   locate_index(const char *s, int c)
+{
+	int		i;
+	char	*str;
+
+	i = 1;
+	str = (char*)s;
+	while (str[i])
+	{
+		if (str[i] == (char)c)
+			return (i);
+		i++;
+	}
+	if (str[i] == (char)c)
+		return (i);
+	return (0);
+}
 
 char    *locate(char *str)
 {
@@ -21,14 +39,12 @@ char    *locate(char *str)
     char *tmp;
 
     i = 0;
-    j = 0;
-    while (str[i] != '\n' && str[i])
-        i++;
-    tmp = malloc((sizeof(char) * i) + 1);
-    while (j < i)
+    j = locate_index(str, '\n') ? locate_index(str, '\n') : locate_index(str, '\0');
+    tmp = malloc((sizeof(char) * j) + 1);
+    while (i < j) 
     {
-        tmp[j] = str[j];
-        j++;
+        tmp[i] = str[i];
+        i++;
     }
     tmp[i] = '\0';
     return (tmp);
@@ -41,21 +57,24 @@ int     get_next_line(int fd, char **line)
     char *buffer;
     char *result;
     char *tmp;
+    char *s;
 
     buffer = malloc(BUFFER_SIZE + 1);
-    while ((i = read(fd, buffer, BUFFER_SIZE)))
+    while ((i = read(fd, buffer, BUFFER_SIZE)) > 0)
     {
-        if (i == 0 && !save[fd])
-            return (0);
+        /*if (i == 0 && !save[fd])
+            return (0);*/
         if (!save[fd])
             save[fd] = malloc(sizeof(char) * 1);
         buffer[i] = '\0';
         result = ft_strjoin(save[fd], buffer);
-        if (ft_strchr(result, '\n'))
+        if ((s = ft_strchr(result, '\n')))
         {
-            tmp = result;
+            //*s = '\0';
+            //tmp = result;
             result = locate(result);
-            save[fd] = ft_strchr(tmp, '\n');
+            //save[fd] = ft_strchr(tmp, '\n');
+            save[fd] = s;
             *line = result;
             return (1);
         }
@@ -79,6 +98,7 @@ int main()
     int fd2 = open("big.txt", O_RDONLY);
     char *str;
     int i = 1;
+
     while (get_next_line (fd, &str) > 0)
     {
         printf("line %d = %s\n", i,str);

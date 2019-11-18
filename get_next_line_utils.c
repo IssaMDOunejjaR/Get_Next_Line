@@ -22,20 +22,6 @@ size_t  ft_strlen(const char *s)
     return (i);
 }
 
-void    ft_putchar_fd(int fd, char c)
-{
-    write(fd, &c, 1);
-}
-
-void    ft_putstr_fd(int fd, char *str)
-{
-    int i;
-
-    i = 0;
-    while (str[i])
-        ft_putchar_fd(fd, str[i++]);
-}
-
 char    *ft_strdup(const char *s1)
 {
     int i;

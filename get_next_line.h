@@ -19,8 +19,6 @@
 # include <unistd.h>
 
 size_t  ft_strlen(const char *s);
-void    ft_putchar_fd(int fd, char c);
-void    ft_putstr_fd(int fd, char *str);
 char    *ft_strdup(const char *s1);
 char	*ft_strjoin(char const *s1, char const *s2);
 void	*ft_memmove(void *dst, const void *src, size_t len);
