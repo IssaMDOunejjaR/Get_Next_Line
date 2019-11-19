@@ -12,8 +12,6 @@
 
 #include "get_next_line.h"
 
-#define BUFFER_SIZE 10
-
 char    *locate(char *str)
 {
     int i;
@@ -36,14 +34,15 @@ char    *locate(char *str)
 
 int     get_next_line(int fd, char **line)
 {
-    static char *save[4864];
+    static char *save[256];
     int i;
-    char *buffer;
+    char buffer[BUFFER_SIZE + 1];
     char *result;
     char *s;
 
-    buffer = malloc(BUFFER_SIZE + 1);
-    while ((i = read(fd, buffer, BUFFER_SIZE)) > 0)
+    if (fd < 0 || !line)
+        return (-1);
+    if ((i = read(fd, buffer, BUFFER_SIZE)) > 0)
     {
         if (!save[fd])
             save[fd] = ft_strdup("");
@@ -58,6 +57,8 @@ int     get_next_line(int fd, char **line)
         else
             save[fd] = result;
     }
+    if (i < 0)
+        return (-1);
     if (save[fd])
     {
         *line = locate(save[fd]);
@@ -79,5 +80,7 @@ int main()
         printf("line %d = %s\n", i, str);
         i++;
     }
+    //get_next_line(1, &str);
+    //printf("line = %s\n", str);
     return 0;
 }
