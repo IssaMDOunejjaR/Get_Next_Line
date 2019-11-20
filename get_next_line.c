@@ -32,42 +32,54 @@ char    *locate(char *str)
     return (tmp);
 }
 
-int     get_next_line(int fd, char **line)
+int     join(char *buffer, char **save, char **line, int fd)
 {
-    static char *save[256];
-    int i;
-    char buffer[BUFFER_SIZE + 1];
-    char *result;
+    char *tmp;
     char *s;
 
-    if (fd < 0 || !line)
-        return (-1);
-    if ((i = read(fd, buffer, BUFFER_SIZE)) > 0)
-    {
-        if (!save[fd])
-            save[fd] = ft_strdup("");
-        buffer[i] = '\0';
-        result = ft_strjoin(save[fd], buffer);
-        if ((s = ft_strchr(result, '\n')))
-        {
-            save[fd] = s;
-            *line = locate(result);
-            return (1);
-        }
-        else
-            save[fd] = result;
-    }
-    if (i < 0)
-        return (-1);
-    if (save[fd])
+    s = save[fd];
+    save[fd] = ft_strjoin(save[fd], buffer);
+    free(s);
+    tmp = save[fd];
+    if ((s = ft_strchr(save[fd], '\n')))
     {
         *line = locate(save[fd]);
-        save[fd] = ft_strchr(save[fd], '\n');
+        save[fd] = ft_strdup(s);
+        free(tmp);
         return (1);
     }
     return (0);
 }
- 
+
+int     get_next_line(int fd, char **line)
+{
+    static char *save[4864];
+    int i;
+    char buffer[BUFFER_SIZE + 1];
+    char *s;
+
+    if (fd < 0 || !line || BUFFER_SIZE < 0 || fd > 4864)
+        return (-1);
+    if (!save[fd])
+        save[fd] = ft_strdup("");
+    while ((i = read(fd, buffer, BUFFER_SIZE)) > 0)
+    {
+        buffer[i] = '\0';
+        if (join(buffer, save, line, fd))
+            return (1);
+    }
+    if (i < 0)
+        return (-1);
+    if (save[fd] && (s = ft_strchr(save[fd], '\n')))
+    {
+        *line = locate(save[fd]);
+        save[fd] = s;
+        return (1);
+    }
+    *line = save[fd];
+    return (0);
+}
+
 int main()
 {
     char *str;
@@ -75,12 +87,24 @@ int main()
     int fd2 = open("big.txt", O_RDONLY);
     int i = 1;
 
-    while(get_next_line(fd2, &str))
+
+    while(get_next_line(fd2, &str) > 0)
     {
         printf("line %d = %s\n", i, str);
+        free(str);
         i++;
     }
-    //get_next_line(1, &str);
-    //printf("line = %s\n", str);
+    printf("line %d = %s\n", i, str);
+    //printf("get = %d\n", get_next_line(40000, &str));
+    // printf("get = %d\n", get_next_line(fd, &str));
+    // printf("line = %s\n", str);
+    // printf("get = %d\n", get_next_line(fd, &str));
+    // printf("line = %s\n", str);
+    // printf("get = %d\n", get_next_line(fd, &str));
+    // printf("line = %s\n", str);
+    // printf("get = %d\n", get_next_line(fd, &str));
+    // printf("line = %s\n", str);
+    // printf("get = %d\n", get_next_line(fd, &str));
+    // printf("line = %s\n", str);
     return 0;
 }
