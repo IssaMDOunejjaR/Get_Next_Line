@@ -87,29 +87,3 @@ char	*ft_strchr(const char *s, int c)
 		return (&str[i]);
 	return (0);
 }
-
-char	*ft_substr(char const *s, unsigned int start, size_t len)
-{
-	int		i;
-	char	*str;
-	size_t	ln;
-
-	i = 0;
-	if (!s)
-		return (NULL);
-	ln = ft_strlen(&s[start]);
-	if (start > ft_strlen(s))
-		return (ft_strdup(""));
-	ln = (len <= ln) ? len : ln;
-	str = malloc(sizeof(char) * (ln + 1));
-	if (!str)
-		return (NULL);
-	while (len-- && s[start] != '\0')
-	{
-		str[i] = s[start];
-		i++;
-		start++;
-	}
-	str[i] = '\0';
-	return (str);
-}
