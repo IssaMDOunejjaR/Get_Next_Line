@@ -87,7 +87,11 @@ char	*ft_strchr(const char *s, int c)
 		return (&str[i]);
 	return (0);
 <<<<<<< HEAD:get_next_line_utils_bonus.c
+<<<<<<< HEAD:get_next_line_utils_bonus.c
 }
+=======
+}
+>>>>>>> e3357b0642c9167c8ea7c42f9c0079bad9cdcda7:get_next_line_utils.c
 =======
 }
 >>>>>>> e3357b0642c9167c8ea7c42f9c0079bad9cdcda7:get_next_line_utils.c
